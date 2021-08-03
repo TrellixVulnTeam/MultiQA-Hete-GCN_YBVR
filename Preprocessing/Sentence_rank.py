@@ -99,17 +99,21 @@ def softmax(x):
 
 def rank_sentences(data, pred_score):
     sentences = []
+    selected = []
     logits = np.array([pred_score['logits0'], pred_score['logits1']]).transpose()
     pred_score['prob'] = softmax(logits)[:, 1]
     for (i, row) in data.iterrows():
         score = pred_score.loc[i, 'prob'].item()
-        if score>0.5:
-            sentences.append({'id':row['id'],"Sub_question":row['Sub_question'],"Context":[row['Title'],row['Sentences']]})
-   
+        if score>0.55:
+            selected.append(row['Sentences'])
+            sentences.append({'id':row['id'],"Sub_question":row['Sub_question'],"Context":[row['Title'],row['Sentences']],'Score':score})
+    selected = list(set(selected))
+    print(len(selected))
+    #print(selected)
     file_name = 'selected_sentences.json'
     with open(file_name,'w') as file_object:
         json.dump(sentences,file_object)
-    print(len(sentences))
+    #print(len(sentences))
 
 
 def load_and_cache_examples(args, task, tokenizer, evaluate=False):
@@ -247,5 +251,5 @@ if __name__ == "__main__":
         #get_train_paras(raw_data, score)
     # load source data
     
-    rank_paras_dict = rank_sentences(raw_data,input_data, score)
+    rank_paras_dict = rank_sentences(input_data, score)
     #json.dump(rank_paras_dict, open(join(args.data_dir, 'sent_ranking.json'), 'w'))

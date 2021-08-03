@@ -4,7 +4,7 @@ import os
 import sys
 from io import open
 from tqdm import tqdm
-
+import numpy as np
 import pandas
 from collections import Counter
 from scipy.stats import pearsonr, spearmanr
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 import nltk
 from nltk.corpus import stopwords
 from nltk import word_tokenize 
-nltk.download('stopwords')
+# nltk.download('stopwords')
 words = stopwords.words('english')
 stop_words = set(stopwords.words('english')) 
 
@@ -62,6 +62,7 @@ class HotpotQAProcessor(object):
         for (i, row) in df.iterrows():
             guid = "%s-%s" % (set_type, i)
             text_a = row['Sub_question']
+            text_a = text_a.replace('[Answer of Question0]','')
             text_b = '{} {}'.format(row['Title'],row['Sentences'])
             label = row['Label']
             examples.append(
